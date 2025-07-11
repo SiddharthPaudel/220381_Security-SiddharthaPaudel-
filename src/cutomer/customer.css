@@ -1,0 +1,137 @@
+/* Global body styles */
+body {
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Container styles */
+.customer-container {
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Title styles */
+.customer-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Table styles */
+.customer-table th,
+.customer-table td {
+    padding: 16px 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Table header */
+.customer-table th {
+    background-color: #007bff;
+    color: white;
+    font-weight: 500;
+    border: 1px solid #ddd;
+}
+
+/* Table row styles */
+.customer-table tbody tr {
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Hover effect for table rows */
+.customer-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Button styles */
+.customer-btn {
+    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Primary button */
+.customer-btn-primary {
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.customer-btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Danger button */
+.customer-btn-danger {
+    background-color: #dc3545;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.customer-btn-danger:hover {
+    background-color: #c82333;
+}
+
+.customer-ml-3 {
+    margin-left: 12px;
+}
+
+/* Search input group styles */
+.customer-input-group {
+    margin-bottom: 30px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+}
+
+/* Styling search input */
+.customer-input-group .form-control {
+    border-radius: 8px;
+    border-left: none;
+    height: 38px;
+    box-shadow: none;
+}
+
+.customer-input-group .input-group-text {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px 0 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0 12px;
+}
+
+.customer-input-group .form-control:focus {
+    box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .customer-title {
+        font-size: 22px;
+    }
+
+    .customer-table th,
+    .customer-table td {
+        font-size: 13px;
+        padding: 12px 15px;
+    }
+
+    .customer-btn {
+        font-size: 12px;
+    }
+}

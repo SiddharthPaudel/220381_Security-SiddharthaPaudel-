@@ -1,0 +1,63 @@
+/* General Styling */
+.contact-table-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .contact-table-header {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  /* Table Styling */
+  .contact-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+  }
+  
+  .contact-table-header-custom {
+    background-color: #f4f4f4;
+    color: #555;
+  }
+  
+  .contact-table th,
+  .contact-table td {
+    padding: 12px 20px;
+    text-align: left;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .contact-table tr:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .contact-table th {
+    font-weight: bold;
+  }
+  
+  /* Button Styling */
+  button {
+    border-radius: 4px;
+    padding: 8px 16px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    cursor: pointer;
+    background-color: #f0f0f0;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 767px) {
+    .contact-table th,
+    .contact-table td {
+      font-size: 12px;
+    }
+  }
+  

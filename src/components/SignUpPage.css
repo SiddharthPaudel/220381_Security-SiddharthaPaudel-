@@ -1,0 +1,122 @@
+/* General Reset */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  font-family: 'Nunito', sans-serif;
+}
+
+/* General Container Styling */
+.registration-container {
+  display: flex;
+  justify-content: center; /* Horizontally center */
+  align-items: center; /* Vertically center */
+  height: 100vh; /* Full viewport height */
+  width: 100%; /* Full viewport width */
+  background-color: white; /* Light gray background */
+  box-sizing: border-box; /* Include padding and borders in dimensions */
+  margin-top: -50px;
+}
+
+/* Form Styling */
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1), 0 8px 30px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 600px; /* Adjusted width for larger screens */
+}
+
+/* Input Row Styling */
+.input-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Add spacing between fields */
+  margin-bottom: 20px;
+}
+
+.input-container {
+  flex: 1;
+}
+
+.form-floating {
+  width: 100%;
+}
+
+.form-control {
+  border-radius: 5px;
+  padding: 12px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+}
+
+/* Button Styling */
+.register-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #007EF2; /* Primary button color */
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.register-btn:hover {
+  background-color: #005bb5;
+  transform: translateY(-2px);
+}
+
+/* Login Link Styling */
+.login-link {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.login-link-text {
+  color: #007EF2;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .registration-form {
+    padding: 20px;
+    max-width: 90%; /* Adjust width for tablets */
+  }
+
+  .input-row {
+    flex-direction: column; /* Stack inputs vertically */
+    gap: 10px; /* Reduce gap */
+  }
+
+  .register-btn {
+    padding: 10px;
+    font-size: 14px; /* Smaller font for buttons */
+  }
+}
+
+@media (max-width: 576px) {
+  .registration-form {
+    padding: 15px;
+  }
+
+  .form-control {
+    font-size: 14px; /* Smaller input font */
+  }
+
+  .register-btn {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .login-link-text {
+    font-size: 14px; /* Smaller font for links */
+  }
+}
