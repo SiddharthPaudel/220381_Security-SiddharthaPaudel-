@@ -16,8 +16,8 @@ const ForgotPassword = () => {
       toast.error("Please enter your email address.", {
         style: {
           borderRadius: "12px",
-          background: "#1e1e1e",
-          color: "#fff",
+          background: "#FFF5E1",
+          color: "#553C1B",
           border: "1px solid #ef4444",
         },
       });
@@ -37,28 +37,28 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#121212] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#FFF5E1] px-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-[#1e1e1e] text-white rounded-lg shadow-lg p-8 max-w-md w-full relative"
+        className="bg-[#FFEBCC] text-[#553C1B] rounded-xl shadow-lg p-8 max-w-md w-full relative border border-yellow-300"
       >
         {/* Close button */}
         <div className="flex justify-end mb-2">
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="text-gray-400 hover:text-red-400 transition"
+            className="text-[#D97706] hover:text-[#B45309] transition"
             aria-label="Close form"
           >
             <X size={20} />
           </button>
         </div>
 
-        <h2 className="text-3xl font-semibold mb-6 text-center text-purple-500">
+        <h2 className="text-3xl font-semibold mb-6 text-center text-[#D97706]">
           Forgot Password
         </h2>
 
-        <label htmlFor="email" className="block mb-2 font-medium text-gray-300">
+        <label htmlFor="email" className="block mb-2 font-medium text-[#553C1B]">
           Email Address
         </label>
         <input
@@ -67,13 +67,13 @@ const ForgotPassword = () => {
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-3 rounded-md bg-[#222222] border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 mb-6 transition"
+          className="w-full px-4 py-3 rounded-md bg-[#FFF0D9] border border-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 mb-6 transition text-[#553C1B] placeholder-[#a06e2b]"
         />
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-md font-semibold transition"
+          className="w-full bg-yellow-400 hover:bg-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed text-[#553C1B] py-3 rounded-md font-semibold transition"
         >
           {isSubmitting ? "Sending..." : "Send Reset Link"}
         </button>

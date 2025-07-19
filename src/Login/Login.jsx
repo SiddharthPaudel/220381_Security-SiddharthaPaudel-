@@ -144,7 +144,7 @@ const Login = () => {
     >
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-3xl p-8 shadow-lg max-w-4xl w-full flex text-[#553C1B] h-[580px]"
+        className="bg-white rounded-3xl p-8 shadow-lg max-w-4xl w-full flex text-[#553C1B] h-[520px]"
       >
         {/* Left side: Image */}
         <div className="w-1/2 flex items-center justify-center pr-0 border-r border-yellow-300">
