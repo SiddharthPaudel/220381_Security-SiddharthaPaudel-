@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from 'react-hot-toast';
-import animeImage from '../images/pointynaru.png'; 
+import animeImage from '../images/signdead.png'; 
 
 const Signup = () => {
   const navigate = useNavigate();

@@ -12,12 +12,12 @@ import {
 } from "react-icons/fa";
 import { useAuth } from "../ContextAPI/Auth";
 import toast from "react-hot-toast";
-import Avatar1 from "../icons/a1.png";
-import Avatar2 from "../icons/a2.png";
-import Avatar3 from "../icons/a3.png";
-import Avatar4 from "../icons/a4.png";
-import Avatar5 from "../icons/a5.png";
-import Avatar6 from "../icons/a6.png";
+import Avatar1 from "../icons/spiderman.png";
+import Avatar2 from "../icons/dead.png";
+import Avatar3 from "../icons/mask.png";
+import Avatar4 from "../icons/ironman.png";
+import Avatar5 from "../icons/antman.png";
+import Avatar6 from "../icons/captain.png";
 import { useNavigate } from "react-router-dom";
 
 const avatarIcons = {

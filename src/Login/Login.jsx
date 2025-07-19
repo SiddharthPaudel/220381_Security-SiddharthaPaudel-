@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import animeImage from "../images/smallguy.png";
+import animeImage from "../images/loginpool.png";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../ContextAPI/Auth";
