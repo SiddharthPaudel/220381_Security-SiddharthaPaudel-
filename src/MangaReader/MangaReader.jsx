@@ -64,6 +64,7 @@ const avatarIcons = {
     />
   ),
 };
+
 const MangaReader = () => {
   const { id } = useParams();
   const { user } = useAuth();
@@ -76,7 +77,6 @@ const MangaReader = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const navigate = useNavigate();
-
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -206,51 +206,51 @@ const MangaReader = () => {
   };
 
   return (
-    <div className="flex bg-[#121212] min-h-screen text-white relative">
-      <aside className="w-64 p-6 bg-[#1e1e1e] hidden md:flex flex-col sticky top-0 h-screen">
+    <div className="flex bg-[#FFF5E1] min-h-screen text-[#553C1B] relative">
+      <aside className="w-64 p-6 bg-[#FFF0D9] hidden md:flex flex-col sticky top-0 h-screen">
         <h2 className="text-xl font-semibold">{mangaTitle}</h2>
         <button
           onClick={toggleScroll}
-          className="mt-6 flex items-center gap-2 text-sm bg-[#2a2a2a] hover:bg-[#3a3a3a] px-3 py-2 rounded"
+          className="mt-6 flex items-center gap-2 text-sm bg-[#FFEBCC] hover:bg-[#FFD580] px-3 py-2 rounded"
         >
-          <FaExchangeAlt className="text-[#ffc107]" />
+          <FaExchangeAlt className="text-[#FFC107]" />
           {scrollDirection === "vertical"
             ? "Switch to Horizontal"
             : "Switch to Vertical"}
         </button>
         <button
           onClick={toggleFullScreen}
-          className="mt-3 flex items-center gap-2 text-sm bg-[#2a2a2a] hover:bg-[#3a3a3a] px-3 py-2 rounded"
+          className="mt-3 flex items-center gap-2 text-sm bg-[#FFEBCC] hover:bg-[#FFD580] px-3 py-2 rounded"
         >
           {isFullScreen ? (
             <>
-              <FaCompress className="text-[#ffc107]" /> Exit Full Screen
+              <FaCompress className="text-[#FFC107]" /> Exit Full Screen
             </>
           ) : (
             <>
-              <FaExpand className="text-[#ffc107]" /> Full Screen
+              <FaExpand className="text-[#FFC107]" /> Full Screen
             </>
           )}
         </button>
         <div className="flex flex-col gap-4 mb-6 mt-auto">
           <button
             onClick={() => setShowComments(true)}
-            className="flex items-center gap-2 hover:text-[#ffc107]"
+            className="flex items-center gap-2 hover:text-[#FFC107]"
           >
-            <FaCommentDots className="text-[#ffc107]" />
+            <FaCommentDots className="text-[#FFC107]" />
             <span>Comments</span>
           </button>
           <button
-  onClick={() => navigate(`/manga/${id}`)} // navigate to Product Details page
-  className="flex items-center gap-2 hover:text-[#ffc107]"
->
-  <FaInfoCircle className="text-[grey]" />
-  <span>Info</span>
-</button>
+            onClick={() => navigate(`/manga/${id}`)} // navigate to Product Details page
+            className="flex items-center gap-2 hover:text-[#FFC107]"
+          >
+            <FaInfoCircle className="text-[grey]" />
+            <span>Info</span>
+          </button>
 
           <button
             onClick={handleBookmark}
-            className="flex items-center gap-2 text-purple hover:text-[#ffc107]"
+            className="flex items-center gap-2 text-[#553C1B] hover:text-[#FFC107]"
           >
             {isBookmarked ? <FaBookmarkFilled /> : <FaRegBookmark />}
             <span>Bookmark</span>
@@ -266,7 +266,7 @@ const MangaReader = () => {
         }`}
       >
         {chapterImages.length === 0 ? (
-          <p className="text-gray-400 text-center w-full mt-10">
+          <p className="text-gray-600 text-center w-full mt-10">
             No chapter pages available.
           </p>
         ) : (
@@ -286,12 +286,12 @@ const MangaReader = () => {
       </main>
 
       {showComments && (
-        <div className="fixed top-0 right-0 w-80 h-full bg-[#1e1e1e] p-4 z-50 shadow-lg border-l border-gray-800 flex flex-col">
+        <div className="fixed top-0 right-0 w-80 h-full bg-[#FFF0D9] p-4 z-50 shadow-lg border-l border-yellow-200 flex flex-col">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Comments</h3>
             <button
               onClick={() => setShowComments(false)}
-              className="text-gray-400 hover:text-white text-xl font-bold"
+              className="text-gray-400 hover:text-[#553C1B] text-xl font-bold"
               aria-label="Close comments"
             >
               &times;
@@ -300,37 +300,36 @@ const MangaReader = () => {
 
           <div className="flex-1 overflow-y-auto space-y-4 pr-2">
             {comments.length === 0 ? (
-              <p className="text-sm text-gray-400">No comments yet.</p>
+              <p className="text-sm text-gray-600">No comments yet.</p>
             ) : (
               comments.map((comment) => (
                 <div
                   key={comment._id}
-                  className="flex items-start gap-3 bg-[#2a2a2a] p-3 rounded shadow"
+                  className="flex items-start gap-3 bg-[#FFEBCC] p-3 rounded shadow"
                 >
                   {/* User Avatar */}
                   {avatarIcons[comment.avatar] || (
-  <div className="w-10 h-10 rounded-full bg-[#444] flex items-center justify-center text-white font-semibold uppercase">
-    {comment.username ? comment.username.charAt(0) : "U"}
-  </div>
-)}
-
+                    <div className="w-10 h-10 rounded-full bg-[#D6B954] flex items-center justify-center text-[#553C1B] font-semibold uppercase">
+                      {comment.username ? comment.username.charAt(0) : "U"}
+                    </div>
+                  )}
 
                   <div className="flex-1">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-semibold text-white">
+                      <span className="text-sm font-semibold text-[#553C1B]">
                         {comment.username || "Unknown User"}
                       </span>
                       {comment.userId === user?.id && (
                         <button
                           onClick={() => handleDeleteComment(comment._id)}
-                          className="text-xs text-red-400 hover:underline"
+                          className="text-xs text-red-500 hover:underline"
                           aria-label="Delete comment"
                         >
                           Delete
                         </button>
                       )}
                     </div>
-                    <p className="text-gray-300 text-sm mt-1 whitespace-pre-wrap">
+                    <p className="text-[#553C1B] text-sm mt-1 whitespace-pre-wrap">
                       {comment.text}
                     </p>
                   </div>
@@ -340,9 +339,9 @@ const MangaReader = () => {
           </div>
 
           {/* New Comment Box */}
-          <div className="mt-4 pt-4 border-t border-gray-700">
+          <div className="mt-4 pt-4 border-t border-yellow-300">
             <textarea
-              className="w-full bg-[#2a2a2a] p-3 text-sm text-white rounded resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full bg-[#FFEBCC] p-3 text-sm text-[#553C1B] rounded resize-none focus:outline-none focus:ring-2 focus:ring-[#FFC107]"
               placeholder="Write a comment..."
               rows={3}
               value={newComment}
@@ -351,7 +350,7 @@ const MangaReader = () => {
             <button
               onClick={handlePostComment}
               disabled={newComment.trim() === ""}
-              className={`mt-2 w-full py-2 rounded text-black font-semibold transition ${
+              className={`mt-2 w-full py-2 rounded text-[#553C1B] font-semibold transition ${
                 newComment.trim() === ""
                   ? "bg-yellow-300 cursor-not-allowed"
                   : "bg-yellow-400 hover:bg-yellow-300"
