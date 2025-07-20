@@ -4,9 +4,12 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js'; // Correct way to import the User model
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import axios from 'axios';
 import sendEmail from '../utils/sendEmail.js';
-const SECRET_KEY = "8261ba19898d0dcdfe6c0c411df74b587b2e54538f5f451633b71e39f957cf01";
-
+import dotenv from 'dotenv';
+dotenv.config();
+const SECRET_KEY = process.env.JWT_SECRET;
+const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 // Signup Controller
 // export const signupController = async (req, res) => {
 //   const { name, email, password } = req.body;
@@ -123,19 +126,51 @@ const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_TIME = 30 * 60 * 1000; // 30 mins lock
 
 export const loginController = async (req, res) => {
-  const { email, password, otp } = req.body;
+  const { email, password, otp, captchaToken } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ msg: 'Email and password required' });
+    return res.status(400).json({ msg: "Email and password required" });
+  }
+
+  // Only require captchaToken if OTP is not provided (first step)
+  if (!otp && !captchaToken) {
+    return res.status(400).json({ msg: "Captcha token is required" });
   }
 
   try {
+    // Verify captcha only if OTP is NOT provided
+    if (!otp) {
+      // Prepare params as x-www-form-urlencoded
+      const params = new URLSearchParams();
+      params.append("secret", process.env.RECAPTCHA_SECRET_KEY);
+      params.append("response", captchaToken);
+
+      const response = await axios.post(
+        "https://www.google.com/recaptcha/api/siteverify",
+        params.toString(),
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        }
+      );
+
+      console.log("Google reCAPTCHA response:", response.data);
+
+      if (!response.data.success) {
+        return res.status(400).json({
+          msg: "Captcha verification failed",
+          errors: response.data["error-codes"],
+        });
+      }
+    }
+
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: 'User not found' });
+    if (!user) return res.status(400).json({ msg: "User not found" });
 
     if (user.lockUntil && user.lockUntil > Date.now()) {
       return res.status(403).json({
-        msg: `Account locked. Try again after ${new Date(user.lockUntil).toLocaleTimeString()}`,
+        msg: `Account locked. Try again after ${new Date(
+          user.lockUntil
+        ).toLocaleTimeString()}`,
       });
     }
 
@@ -146,7 +181,7 @@ export const loginController = async (req, res) => {
         user.lockUntil = Date.now() + LOCK_TIME;
       }
       await user.save();
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(400).json({ msg: "Invalid credentials" });
     }
 
     // Password matched: reset failed attempts
@@ -160,27 +195,29 @@ export const loginController = async (req, res) => {
       user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins expiry
       await user.save();
 
-      await sendEmail(user.email, 'Your Login OTP', `Your OTP is: ${generatedOtp}`);
+      await sendEmail(user.email, "Your Login OTP", `Your OTP is: ${generatedOtp}`);
 
       return res.status(200).json({
-        msg: 'OTP sent to your email. Please verify to complete login.',
+        msg: "OTP sent to your email. Please verify to complete login.",
         requireOtp: true,
       });
     }
 
     // Verify OTP
     if (otp !== user.otpCode || Date.now() > user.otpExpires) {
-      return res.status(400).json({ msg: 'Invalid or expired OTP' });
+      return res.status(400).json({ msg: "Invalid or expired OTP" });
     }
 
+    // Clear OTP after successful verification
     user.otpCode = null;
     user.otpExpires = null;
     await user.save();
 
+    // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       SECRET_KEY,
-      { expiresIn: '2h' }
+      { expiresIn: "2h" }
     );
 
     return res.json({
@@ -194,8 +231,8 @@ export const loginController = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('❌ Login error:', err);
-    return res.status(500).json({ error: 'Login failed' });
+    console.error("❌ Login error:", err);
+    return res.status(500).json({ error: "Login failed" });
   }
 };
 
