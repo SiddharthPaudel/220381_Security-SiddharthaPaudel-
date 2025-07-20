@@ -5,8 +5,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../ContextAPI/Auth";
 import toast from "react-hot-toast";
 import ReCAPTCHA from "react-google-recaptcha";
+import { Eye, EyeOff } from "lucide-react";
 
-const RECAPTCHA_SITE_KEY = "6Le-K4krAAAAAJt8lB_XC29owPpNrFK2TWdi5mSl"; // Replace with your actual site key
+const RECAPTCHA_SITE_KEY = "6Le-K4krAAAAAJt8lB_XC29owPpNrFK2TWdi5mSl"; // Your site key
 
 const Login = () => {
   const { login } = useAuth();
@@ -17,8 +18,8 @@ const Login = () => {
   const [isOtpStep, setIsOtpStep] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Store recaptcha token
   const [captchaToken, setCaptchaToken] = useState(null);
   const recaptchaRef = useRef(null);
 
@@ -29,24 +30,21 @@ const Login = () => {
     }));
   };
 
- const onCaptchaChange = (token) => {
-  console.log("Captcha token:", token);  // <-- Add this line
-  setCaptchaToken(token);
-};
-
+  const onCaptchaChange = (token) => {
+    console.log("Captcha token:", token);
+    setCaptchaToken(token);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
-    // If not in OTP step, check captcha first
+
     if (!isOtpStep && !captchaToken) {
       toast.error("Please complete the CAPTCHA to proceed.");
       return;
     }
 
     setIsLoading(true);
-
     const loadingToast = toast.loading(
       <span className="flex items-center gap-2">
         <svg className="animate-spin h-4 w-4 text-yellow-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -67,21 +65,13 @@ const Login = () => {
     );
 
     try {
-      // Send captchaToken only on first step
-      const payload = isOtpStep
-        ? { ...formData, otp }
-        : { ...formData, captchaToken };
-
+      const payload = isOtpStep ? { ...formData, otp } : { ...formData, captchaToken };
       const res = await axios.post("http://localhost:5000/api/auth/login", payload);
 
       if (res.data.requireOtp) {
-        toast.success("OTP sent to your email 📧", {
-          id: loadingToast,
-          duration: 1000,
-        });
+        toast.success("OTP sent to your email 📧", { id: loadingToast, duration: 1000 });
         setIsOtpStep(true);
         setIsLoading(false);
-        // Reset captcha token for next login attempt if needed
         setCaptchaToken(null);
         if (recaptchaRef.current) recaptchaRef.current.reset();
         return;
@@ -111,11 +101,7 @@ const Login = () => {
       );
 
       setTimeout(() => {
-        if (res.data.user.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/");
-        }
+        navigate(res.data.user.role === "admin" ? "/admin" : "/");
       }, 1500);
     } catch (err) {
       console.error(err);
@@ -137,7 +123,6 @@ const Login = () => {
         },
       });
 
-      // Reset captcha on error to force user to solve it again
       setCaptchaToken(null);
       if (recaptchaRef.current) recaptchaRef.current.reset();
     } finally {
@@ -148,12 +133,10 @@ const Login = () => {
   return (
     <div className="flex min-h-screen justify-center items-center px-4 font-montserrat" style={{ backgroundColor: "#FFF5E1" }}>
       <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-8 shadow-lg max-w-4xl w-full flex text-[#553C1B] h-[580px]">
-        {/* Left side: Image */}
         <div className="w-1/2 flex items-center justify-center pr-0 border-r border-yellow-300">
           <img src={animeImage} alt="Anime character" className="w-full max-w-sm h-auto object-contain rounded-md" />
         </div>
 
-        {/* Right side: Login Fields */}
         <div className="w-1/2 pl-8 flex flex-col justify-center space-y-6">
           <h2 className="text-3xl font-bold text-yellow-600 text-center mb-4">Login</h2>
 
@@ -173,10 +156,10 @@ const Login = () => {
                 />
               </div>
 
-              <div>
+              <div className="relative">
                 <label className="block text-sm font-medium mb-1">Password</label>
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
@@ -185,6 +168,13 @@ const Login = () => {
                   required
                   disabled={isLoading}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute top-9 right-3 text-yellow-600"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
                 <div className="text-right mt-1">
                   <Link to="/forgot-password" className="text-sm text-yellow-600 hover:underline transition">
                     Forgot password?
@@ -192,14 +182,8 @@ const Login = () => {
                 </div>
               </div>
 
-              {/* RECAPTCHA */}
               <div className="mt-4">
-                <ReCAPTCHA
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  onChange={onCaptchaChange}
-                  ref={recaptchaRef}
-                  theme="light"
-                />
+                <ReCAPTCHA sitekey={RECAPTCHA_SITE_KEY} onChange={onCaptchaChange} ref={recaptchaRef} theme="light" />
               </div>
             </>
           )}
