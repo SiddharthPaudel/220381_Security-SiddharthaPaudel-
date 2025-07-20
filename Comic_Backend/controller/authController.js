@@ -389,15 +389,24 @@ export const resetPassword = async (req, res) => {
 
     if (!user) return res.status(400).json({ message: "Invalid or expired token" });
 
-    // Update password (will be hashed in pre-save hook)
+    // Update password (this triggers pre-save hook with reuse check)
     user.password = newPassword;
+
+    // Save user and catch reuse error if thrown
+    await user.save();
+
+    // Clear reset tokens
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
-
     await user.save();
 
     res.json({ message: "Password has been reset successfully" });
   } catch (err) {
+    // Check if error is password reuse error from pre-save hook
+    if (err.message.includes("New password must not match")) {
+      return res.status(400).json({ message: err.message });
+    }
+
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
