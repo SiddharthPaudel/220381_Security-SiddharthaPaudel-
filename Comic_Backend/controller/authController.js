@@ -28,12 +28,35 @@ export const signupController = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
+    // Check existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    const newUser = await User.create({ name, email, password });
+    // ✅ Email format validation (very basic regex)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        msg: 'Please provide a valid email address.',
+      });
+    }
+
+    // ✅ Password strength validation
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&_])[A-Za-z\d@$!%*?#&_]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        msg: 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.',
+      });
+    }
+
+    // ✅ Create user (assuming password hashing in your model's pre-save hook)
+    const newUser = await User.create({
+      name,
+      email,
+      password,
+    });
 
     res.status(201).json({ msg: 'User registered successfully' });
   } catch (err) {
