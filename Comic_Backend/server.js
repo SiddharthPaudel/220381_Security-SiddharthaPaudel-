@@ -12,13 +12,14 @@ import paymentRoutes from "./routes/paymentRoutes.js"
 
 // Config
 import connectDB from "./config/db.js";
-
+import { globalApiLimiter } from './middleware/rateLimiter.js'
 // Load environment variables
 dotenv.config();
-
 const app = express();
+app.use(globalApiLimiter);
 app.use(cors());
 app.use(express.json());
+
 
 // Resolve __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -39,3 +40,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
   console.log(`🚀 Server running on http://localhost:${PORT}`)
 );
+
