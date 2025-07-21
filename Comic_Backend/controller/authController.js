@@ -71,56 +71,6 @@ export const signupController = async (req, res) => {
 
 // Login Controller
 
-// export const loginController = async (req, res) => {
-//     console.log('🔍 Login attempt:', req.body);
-//     const { email, password } = req.body;
-  
-//     if (!email || !password) {
-//       console.warn('⚠️ Missing email or password');
-//       return res.status(400).json({ msg: 'Email and password required' });
-//     }
-  
-//     try {
-//       const user = await User.findOne({ email });
-//       console.log('👤 Fetched user:', user);
-  
-//       if (!user) {
-//         console.warn('🚫 User not found');
-//         return res.status(400).json({ msg: 'User not found' });
-//       }
-  
-//       const isMatch = await bcrypt.compare(password, user.password);
-//       console.log('🔐 Password match:', isMatch);
-  
-//       if (!isMatch) {
-//         console.warn('🚫 Invalid credentials');
-//         return res.status(400).json({ msg: 'Invalid credentials' });
-//       }
-  
-//       const token = jwt.sign(
-//         { userId: user._id, role: user.role },
-//         SECRET_KEY, // use this instead of JWT_SECRET
-//         { expiresIn: '2h' }
-//       );
-      
-//       console.log('✅ JWT issued:', token);
-  
-//       return res.json({
-//         token,
-//         user: { 
-//           id: user._id, 
-//           name: user.name, 
-//           email: user.email, 
-//           role: user.role,
-//           avatar: user.avatar // ← ADD THIS LINE
-//         }
-//       });
-//     } catch (err) {
-//       console.error('❌ Login error:', err);
-//       return res.status(500).json({ error: 'Login failed' });
-//     }
-//   };
-
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_TIME = 30 * 60 * 1000; // 30 mins lock
@@ -132,15 +82,12 @@ export const loginController = async (req, res) => {
     return res.status(400).json({ msg: "Email and password required" });
   }
 
-  // Only require captchaToken if OTP is not provided (first step)
   if (!otp && !captchaToken) {
     return res.status(400).json({ msg: "Captcha token is required" });
   }
 
   try {
-    // Verify captcha only if OTP is NOT provided
     if (!otp) {
-      // Prepare params as x-www-form-urlencoded
       const params = new URLSearchParams();
       params.append("secret", process.env.RECAPTCHA_SECRET_KEY);
       params.append("response", captchaToken);
@@ -166,6 +113,21 @@ export const loginController = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: "User not found" });
 
+    // ✅ Password Expiry Check (90 days)
+    const PASSWORD_EXPIRY_DAYS = 90;
+    const passwordExpired = (user) => {
+      if (!user.passwordChangedAt) return false;
+      const expiryDate = new Date(user.passwordChangedAt);
+      expiryDate.setDate(expiryDate.getDate() + PASSWORD_EXPIRY_DAYS);
+      return expiryDate < new Date();
+    };
+
+    if (passwordExpired(user)) {
+      return res.status(403).json({
+        msg: "Your password has expired. Please reset your password.",
+      });
+    }
+
     if (user.lockUntil && user.lockUntil > Date.now()) {
       return res.status(403).json({
         msg: `Account locked. Try again after ${new Date(
@@ -184,15 +146,13 @@ export const loginController = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Password matched: reset failed attempts
     user.failedLoginAttempts = 0;
     user.lockUntil = null;
 
-    // MFA: if OTP not provided, generate and send
     if (!otp) {
       const generatedOtp = crypto.randomInt(100000, 999999).toString();
       user.otpCode = generatedOtp;
-      user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins expiry
+      user.otpExpires = Date.now() + 10 * 60 * 1000;
       await user.save();
 
       await sendEmail(user.email, "Your Login OTP", `Your OTP is: ${generatedOtp}`);
@@ -203,17 +163,14 @@ export const loginController = async (req, res) => {
       });
     }
 
-    // Verify OTP
     if (otp !== user.otpCode || Date.now() > user.otpExpires) {
       return res.status(400).json({ msg: "Invalid or expired OTP" });
     }
 
-    // Clear OTP after successful verification
     user.otpCode = null;
     user.otpExpires = null;
     await user.save();
 
-    // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       SECRET_KEY,
@@ -235,6 +192,7 @@ export const loginController = async (req, res) => {
     return res.status(500).json({ error: "Login failed" });
   }
 };
+
 
 export const updateUser = async (req, res) => {
   try {
