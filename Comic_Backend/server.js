@@ -14,7 +14,7 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 // Config
 import connectDB from "./config/db.js";
 import { globalApiLimiter } from './middleware/rateLimiter.js';
-
+import mongoSanitize from 'express-mongo-sanitize';
 // Load environment variables
 dotenv.config();
 
@@ -36,8 +36,15 @@ app.use(helmet.frameguard({ action: "deny" })); // Clickjacking prevention
 app.use(helmet.noSniff()); // Prevent MIME sniffing
 app.use(helmet.xssFilter()); // Basic XSS protection
 app.use(helmet.hsts({ maxAge: 31536000, includeSubDomains: true })); // Enforce HTTPS for 1 year
+// app.use(mongoSanitize({
+//     onSanitize: ({ req, key }) => {
+//         console.warn(`This request had its ${key} sanitized`);
+//     },
+//     replaceWith: '_',
+//     allowDots: true
+// }));
+// // Resolve __dirname in ES module
 
-// Resolve __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

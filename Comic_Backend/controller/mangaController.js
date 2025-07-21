@@ -707,46 +707,113 @@ export const deleteCommentFromOverall = async (req, res) => {
   }
 };
 
+// export const addRating = async (req, res) => {
+//   try {
+//     const { mangaId } = req.params;
+//     const { userId, rating, review, avatar } = req.body;  // <--- add avatar here
+
+//     if (!userId || !rating) {
+//       return res.status(400).json({ message: "User ID and rating are required" });
+//     }
+
+//     // Fetch Manga
+//     const manga = await Manga.findById(mangaId);
+//     if (!manga) return res.status(404).json({ message: "Manga not found" });
+
+//     // Update or add to manga.ratings
+//     const existingRating = manga.ratings.find(r => r.userId.toString() === userId);
+//     if (existingRating) {
+//       existingRating.rating = rating;
+//       existingRating.review = review;
+//       existingRating.avatar = avatar;  // update avatar as well
+//     } else {
+//       manga.ratings.push({ userId, rating, review, avatar });
+//     }
+
+//     await manga.save();
+
+//     // Update user.reviews
+//     const user = await User.findById(userId);
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const existingReview = user.reviews.find(r => r.manga.toString() === mangaId);
+//     if (existingReview) {
+//       existingReview.rating = rating;
+//       existingReview.reviewText = review;
+//     } else {
+//       user.reviews.push({ manga: mangaId, rating, reviewText: review });
+//     }
+
+//     await user.save();
+
+//     // Populate user names in manga ratings
+//     const populatedManga = await Manga.findById(mangaId).populate({
+//       path: "ratings.userId",
+//       select: "name"
+//     });
+
+//     return res.status(200).json({
+//       message: "Rating and review saved successfully",
+//       ratings: populatedManga.ratings
+//     });
+
+//   } catch (error) {
+//     console.error("Error saving rating:", error);
+//     return res.status(500).json({ message: "Error saving rating and review" });
+//   }
+// };
+
+
+import sanitize from "mongo-sanitize"; // Ensure you install: npm install mongo-sanitize
+
 export const addRating = async (req, res) => {
   try {
-    const { mangaId } = req.params;
-    const { userId, rating, review, avatar } = req.body;  // <--- add avatar here
+    const mangaId = sanitize(req.params.mangaId);
+    const { userId, rating, review, avatar } = req.body;
 
-    if (!userId || !rating) {
-      return res.status(400).json({ message: "User ID and rating are required" });
+    // Input validations
+    if (!mongoose.Types.ObjectId.isValid(mangaId) || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid manga ID or user ID" });
     }
 
-    // Fetch Manga
+    if (typeof rating !== "number" || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Rating must be a number between 1 and 5" });
+    }
+
+    if (review && typeof review !== "string") {
+      return res.status(400).json({ message: "Review must be a string" });
+    }
+
+    // Sanitize review text to prevent injection
+    const cleanReview = sanitize(review);
+
     const manga = await Manga.findById(mangaId);
     if (!manga) return res.status(404).json({ message: "Manga not found" });
 
-    // Update or add to manga.ratings
     const existingRating = manga.ratings.find(r => r.userId.toString() === userId);
     if (existingRating) {
       existingRating.rating = rating;
-      existingRating.review = review;
-      existingRating.avatar = avatar;  // update avatar as well
+      existingRating.review = cleanReview;
+      existingRating.avatar = avatar;
     } else {
-      manga.ratings.push({ userId, rating, review, avatar });
+      manga.ratings.push({ userId, rating, review: cleanReview, avatar });
     }
 
     await manga.save();
 
-    // Update user.reviews
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const existingReview = user.reviews.find(r => r.manga.toString() === mangaId);
     if (existingReview) {
       existingReview.rating = rating;
-      existingReview.reviewText = review;
+      existingReview.reviewText = cleanReview;
     } else {
-      user.reviews.push({ manga: mangaId, rating, reviewText: review });
+      user.reviews.push({ manga: mangaId, rating, reviewText: cleanReview });
     }
 
     await user.save();
 
-    // Populate user names in manga ratings
     const populatedManga = await Manga.findById(mangaId).populate({
       path: "ratings.userId",
       select: "name"
@@ -759,10 +826,9 @@ export const addRating = async (req, res) => {
 
   } catch (error) {
     console.error("Error saving rating:", error);
-    return res.status(500).json({ message: "Error saving rating and review" });
+    return res.status(500).json({ message: "Server error while saving rating and review" });
   }
 };
-
 
 export const removeRating = async (req, res) => {
   try {
