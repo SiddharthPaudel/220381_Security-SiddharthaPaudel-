@@ -32,7 +32,7 @@ app.use(
     crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow loading images / fonts
   })
 );
-// app.use(helmet.frameguard({ action: "deny" })); // Clickjacking prevention
+app.use(helmet.frameguard({ action: "deny" })); // Clickjacking prevention
 // app.use(helmet.noSniff()); // Prevent MIME sniffing
 // app.use(helmet.xssFilter()); // Basic XSS protection
 // app.use(helmet.hsts({ maxAge: 31536000, includeSubDomains: true })); // Enforce HTTPS for 1 year
