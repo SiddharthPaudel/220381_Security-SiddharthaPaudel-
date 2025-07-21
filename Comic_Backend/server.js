@@ -33,8 +33,8 @@ app.use(
   })
 );
 app.use(helmet.frameguard({ action: "deny" })); // Clickjacking prevention
-// app.use(helmet.noSniff()); // Prevent MIME sniffing
-// app.use(helmet.xssFilter()); // Basic XSS protection
+app.use(helmet.noSniff()); // Prevent MIME sniffing
+app.use(helmet.xssFilter()); // Basic XSS protection
 // app.use(helmet.hsts({ maxAge: 31536000, includeSubDomains: true })); // Enforce HTTPS for 1 year
 
 // Resolve __dirname in ES module
