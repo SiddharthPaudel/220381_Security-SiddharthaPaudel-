@@ -72,14 +72,14 @@ const AddChapter = () => {
         <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
           {/* Manga Selection */}
           <div>
-            <label className="block font-semibold mb-1">Select Manga</label>
+            <label className="block font-semibold mb-1">Select Comic</label>
             <select
               value={selectedManga}
               onChange={(e) => setSelectedManga(e.target.value)}
               className="w-full bg-[#2a2a2a] border border-gray-500 px-4 py-2 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
             >
               <option value="" disabled>
-                Select manga title
+                Select Comic title
               </option>
               {mangas.map((manga) => (
                 <option key={manga._id} value={manga._id} className="bg-[#2a2a2a] text-white">

@@ -8,10 +8,10 @@ const AdminSidebar = () => {
   const menuItems = [
     { name: "Dashboard", icon: <FaTachometerAlt />, path: "/admin" },
     { name: "Users", icon: <FaUsers />, path: "/admin/usertable" },
-    { name: "Add Manga", icon: <FaBoxOpen />, path: "/admin/addmanga" },
+    { name: "Add Comic", icon: <FaBoxOpen />, path: "/admin/addmanga" },
      { name: "Add Chapters", icon: <FaBoxOpen />, path: "/admin/addchapter" },
     { name: "Rental", icon: <FaUsers />, path: "/admin/rental" },
-    { name: "Manga", icon: <FaUsers />, path: "/admin/manga" },
+    { name: "Comic", icon: <FaUsers />, path: "/admin/manga" },
 
 
     { name: "Logout", icon: <FaSignOutAlt />, path: "/" },

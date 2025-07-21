@@ -388,9 +388,28 @@ export const rentManga = async (req, res) => {
       return res.status(400).json({ error: 'Phone number must be exactly 10 digits.' });
     }
 
+    if (!['days', 'hours'].includes(durationUnit)) {
+      return res.status(400).json({ error: 'Invalid duration unit.' });
+    }
+
+    if (parseInt(durationValue) <= 0) {
+      return res.status(400).json({ error: 'Duration must be greater than 0.' });
+    }
+
     const manga = await Manga.findById(mangaId);
     if (!manga || !manga.isRentable) {
       return res.status(404).json({ error: 'Manga not found or not rentable.' });
+    }
+
+    // Check for existing active rental
+    const existingRental = await Rental.findOne({
+      userId,
+      mangaId,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (existingRental) {
+      return res.status(400).json({ error: 'You already have an active rental for this manga.' });
     }
 
     const rentedAt = new Date();
@@ -399,8 +418,6 @@ export const rentManga = async (req, res) => {
       expiresAt.setDate(rentedAt.getDate() + parseInt(durationValue));
     } else if (durationUnit === 'hours') {
       expiresAt.setHours(rentedAt.getHours() + parseInt(durationValue));
-    } else {
-      return res.status(400).json({ error: 'Invalid duration unit.' });
     }
 
     const basePrice = manga.rentalDetails?.price || 0;
@@ -410,7 +427,6 @@ export const rentManga = async (req, res) => {
         : (basePrice / 24) * parseInt(durationValue);
     totalPrice = Math.round(totalPrice * 100) / 100;
 
-    // ✅ eSewa specific logic
     if (paymentMethod === 'Esewa') {
       const transaction_uuid = new mongoose.Types.ObjectId().toString();
       const product_code = process.env.ESEWA_MERCHANT_CODE;
@@ -439,8 +455,7 @@ export const rentManga = async (req, res) => {
       });
     }
 
-    // ✅ Other payment methods - save directly
-   if (['Cash', 'Khalti', 'Card'].includes(paymentMethod)) {
+    if (['Cash', 'Khalti', 'Card'].includes(paymentMethod)) {
       const rental = new Rental({
         userId,
         mangaId,
@@ -453,17 +468,26 @@ export const rentManga = async (req, res) => {
       });
 
       await rental.save();
-      await User.findByIdAndUpdate(userId, { $addToSet: { rentedManga: mangaId } });
 
-await Manga.findByIdAndUpdate(mangaId, {
-  $addToSet: {
-    rentedBy: {
-      userId: new mongoose.Types.ObjectId(userId),
-      rentedAt,
-      expiresAt
-    }
-  }
-});
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: {
+          rentedManga: {
+            manga: mangaId,
+            rentedAt,
+            expiresAt,
+          },
+        },
+      });
+
+      await Manga.findByIdAndUpdate(mangaId, {
+        $addToSet: {
+          rentedBy: {
+            userId: new mongoose.Types.ObjectId(userId),
+            rentedAt,
+            expiresAt
+          }
+        }
+      });
 
       return res.status(201).json({ message: 'Manga rented successfully', rental });
     }
@@ -475,6 +499,7 @@ await Manga.findByIdAndUpdate(mangaId, {
     res.status(500).json({ error: 'Failed to rent manga' });
   }
 };
+
 
 
 

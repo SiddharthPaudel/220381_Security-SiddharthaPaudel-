@@ -117,7 +117,7 @@ const MangaTable = () => {
 
   return (
     <div className="min-h-screen p-8 bg-[#121212] text-white font-[Montserrat]">
-      <h2 className="text-3xl mb-6">All Manga</h2>
+      <h2 className="text-3xl mb-6">All Comic</h2>
       <div className="overflow-x-auto rounded-xl border border-gray-700 bg-[#1e1e1e] shadow-lg">
         <table className="min-w-full text-sm text-left text-gray-300">
           <thead className="bg-[#2c2c2c] text-xs uppercase">
