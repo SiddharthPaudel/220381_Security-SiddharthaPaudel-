@@ -1,14 +1,14 @@
 import React from 'react';
 import characterLeft from '../images/super.png';     // Replace with your actual image
 import characterRight from '../images/bat.png';   // Replace with your actual image
-import onepiece from '../images/onepng.png';
-import aot from '../images/aotpng.png';
-import mha from '../images/myheropng.png';
+import onepiece from '../images/civilwar.jpg';
+import aot from '../images/wolverine.webp';
+import mha from '../images/invincible.png';
 
 const comics = [
   {
     id: 1,
-    title: "New Chapter of 'One Piece' Released",
+    title: "New Chapter of 'Civil War' Released",
     image: onepiece,
     description: "Read the latest chapter of the epic 'One Piece' saga. Join Luffy and his crew on their new adventure!",
     date: "October 15, 2021",
@@ -16,7 +16,7 @@ const comics = [
   },
   {
     id: 2,
-    title: "Exciting Release: 'Attack on Titan' Finale",
+    title: "Exciting Release: 'Wolverine X Spiderman' Finale",
     image: aot,
     description: "Witness the thrilling conclusion of 'Attack on Titan'. Find out the fate of Eren and the world!",
     date: "October 20, 2021",
