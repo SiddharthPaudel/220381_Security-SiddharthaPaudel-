@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js'; // Correct way to import the User model
 import crypto from 'crypto';
+import sanitize from "mongo-sanitize";
 import nodemailer from 'nodemailer';
 import axios from 'axios';
 import sendEmail from '../utils/sendEmail.js';
@@ -76,8 +77,9 @@ const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_TIME = 30 * 60 * 1000; // 30 mins lock
 
 export const loginController = async (req, res) => {
-  const { email, password, otp, captchaToken } = req.body;
+  let { email, password, otp, captchaToken } = req.body;
 
+  // ✅ Basic Input Checks
   if (!email || !password) {
     return res.status(400).json({ msg: "Email and password required" });
   }
@@ -87,6 +89,10 @@ export const loginController = async (req, res) => {
   }
 
   try {
+    // ✅ Sanitize email to prevent NoSQL injection
+    email = sanitize(email);
+
+    // ✅ CAPTCHA verification (if OTP not sent yet)
     if (!otp) {
       const params = new URLSearchParams();
       params.append("secret", process.env.RECAPTCHA_SECRET_KEY);
@@ -128,6 +134,7 @@ export const loginController = async (req, res) => {
       });
     }
 
+    // ✅ Check if account is locked
     if (user.lockUntil && user.lockUntil > Date.now()) {
       return res.status(403).json({
         msg: `Account locked. Try again after ${new Date(
@@ -136,23 +143,28 @@ export const loginController = async (req, res) => {
       });
     }
 
+    // ✅ Verify Password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       user.failedLoginAttempts += 1;
+
       if (user.failedLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
         user.lockUntil = Date.now() + LOCK_TIME;
       }
+
       await user.save();
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
+    // ✅ Password matches
     user.failedLoginAttempts = 0;
     user.lockUntil = null;
 
+    // ✅ OTP handling
     if (!otp) {
       const generatedOtp = crypto.randomInt(100000, 999999).toString();
       user.otpCode = generatedOtp;
-      user.otpExpires = Date.now() + 10 * 60 * 1000;
+      user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
       await user.save();
 
       await sendEmail(user.email, "Your Login OTP", `Your OTP is: ${generatedOtp}`);
@@ -163,14 +175,17 @@ export const loginController = async (req, res) => {
       });
     }
 
+    // ✅ Validate OTP
     if (otp !== user.otpCode || Date.now() > user.otpExpires) {
       return res.status(400).json({ msg: "Invalid or expired OTP" });
     }
 
+    // ✅ Clear OTP fields
     user.otpCode = null;
     user.otpExpires = null;
     await user.save();
 
+    // ✅ Generate JWT
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       SECRET_KEY,
