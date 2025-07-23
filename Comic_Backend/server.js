@@ -57,7 +57,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ✅ API Routes
 app.use("/api/auth", mongoSanitize(), authRoutes);
 app.use("/api/manga",mongoSanitize(), mangaRoutes);
-app.use("/api/payment", paymentRoutes);
+app.use("/api/payment",mongoSanitize(), paymentRoutes);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
