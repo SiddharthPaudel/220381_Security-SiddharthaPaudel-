@@ -252,30 +252,64 @@ export const getMangaById = async (req, res) => {
   }
 };
 // Add a comment to a manga (overall comment)
+import sanitizeHtml from 'sanitize-html';
 export const addComment = async (req, res) => {
   try {
     const { mangaId } = req.params;
     const { userId, username, text } = req.body;
 
+    // ✅ Validate IDs to prevent NoSQL Injection
+    if (!mongoose.Types.ObjectId.isValid(mangaId) || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid manga ID or user ID" });
+    }
+
+    // ✅ Check for missing or empty fields
+    if (!username || !text || !text.trim()) {
+      return res.status(400).json({ message: "Username and comment text are required" });
+    }
+
     const manga = await Manga.findById(mangaId);
     if (!manga) return res.status(404).json({ message: "Manga not found" });
 
-    // Fetch the avatar from the user
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const avatar = user.avatar || null; // assuming avatar is a number like 1, 2, 3...
+    const avatar = user.avatar || null;
 
-    // Push the comment with avatar
-    manga.overallComments.push({ userId, username, text, avatar });
+    // ✅ Sanitize inputs to prevent XSS
+    const sanitizedUsername = sanitizeHtml(username.trim(), {
+      allowedTags: [],
+      allowedAttributes: {},
+    });
+
+    const sanitizedText = sanitizeHtml(text.trim(), {
+      allowedTags: [], // Or allow `<b>`, `<i>`, etc. if needed
+      allowedAttributes: {},
+    });
+
+    // ✅ Create secure comment object
+    const newComment = {
+      userId,
+      username: sanitizedUsername,
+      text: sanitizedText,
+      avatar,
+      createdAt: new Date(),
+    };
+
+    manga.overallComments.push(newComment);
     await manga.save();
 
-    res.status(200).json({ message: "Comment added", comments: manga.overallComments });
+    res.status(200).json({
+      message: "Comment added successfully",
+      comments: manga.overallComments,
+    });
+
   } catch (err) {
     console.error("Error adding comment:", err);
     res.status(500).json({ error: "Failed to add comment" });
   }
 };
+
 export const removeComment = async (req, res) => {
   try {
     const { mangaId, commentId } = req.params;

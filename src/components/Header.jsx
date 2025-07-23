@@ -21,7 +21,7 @@ import {
 import { GiNinjaHead } from "react-icons/gi";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import ProfileIcon from "../icons/profileIcon.png";
-import BookmarkIcon from "../icons/book1.png";
+import BookmarkIcon from "../icons/newbok.png";
 import Avatar1 from "../icons/spiderman.png";
 import Avatar2 from "../icons/dead.png";
 import Avatar3 from "../icons/mask.png";
