@@ -1,4 +1,5 @@
 📖 Comic Ninja
+
 Comic Ninja is a feature-rich full-stack MERN application that allows users to explore, read, and rent comics online. With secure authentication, seamless eSewa payment integration, and role-based access, Comic Ninja delivers an engaging experience for both casual readers and administrators.
 
 🚀 Key Features
