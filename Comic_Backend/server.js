@@ -56,7 +56,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ API Routes
 app.use("/api/auth", mongoSanitize(), authRoutes);
-app.use("/api/manga",mongoSanitize(), mangaRoutes);
+app.use("/api/manga", mangaRoutes);
 app.use("/api/payment",mongoSanitize(), paymentRoutes);
 
 // ✅ Start Server
