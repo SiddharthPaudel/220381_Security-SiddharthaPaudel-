@@ -1,12 +1,77 @@
-# React + Vite
+📖 Comic Ninja
+Comic Ninja is a feature-rich full-stack MERN application that allows users to explore, read, and rent comics online. With secure authentication, seamless eSewa payment integration, and role-based access, Comic Ninja delivers an engaging experience for both casual readers and administrators.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀 Key Features
+👤 User Features
+🔐 Secure Authentication
 
-Currently, two official plugins are available:
+OTP-based email verification for login/signup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Google reCAPTCHA to prevent bot access
 
-## Expanding the ESLint configuration
+📚 Read & Rent Comics
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Browse an interactive library of comics
+
+Read comics online
+
+Rent premium comics using eSewa
+
+💬 Community Engagement
+
+Add comments and reviews on comics
+
+Interact with other users through discussions
+
+📌 Bookmark System
+
+Bookmark favorite comics to access them easily later
+
+🖼️ Profile Management
+
+Edit user details
+
+Select from a variety of custom avatars
+
+🧾 Rental History
+
+View your complete rental and payment history
+
+🛠️ Admin Features
+🧑‍💼 Role-Based Access Control
+
+Admin dashboard for managing platform content
+
+📘 Comic Management
+
+Add, update, or delete comics and their chapters
+
+🗑️ Moderation Tools
+
+Review and delete inappropriate comments or reviews
+
+📊 Analytics
+
+View summaries of rentals and payment transactions
+
+💳 eSewa Payment Flow
+User selects a comic to rent.
+
+Redirected to eSewa's secure payment gateway.
+
+On successful transaction, backend verifies payment via eSewa API.
+
+Rental is recorded and user is redirected to a confirmation page.
+
+🔐 Security Highlights
+JWT-based authentication for protected routes
+
+OTP verification during sign-up/login
+
+Google reCAPTCHA to block automated bots
+
+Input validation and sanitization for all fields
+
+Role-based route protection (Admin/User)
+
+📸 Screenshots
