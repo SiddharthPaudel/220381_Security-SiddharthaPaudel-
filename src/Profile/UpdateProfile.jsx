@@ -21,7 +21,7 @@ const avatarIcons = [
 ];
 
 const UpdateProfile = ({ onClose }) => {
-  const { user, token, updateUserProfile } = useAuth();
+  const { user,  updateUserProfile } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ username: "", email: "" });
   const [selectedAvatar, setSelectedAvatar] = useState(1);
@@ -47,7 +47,7 @@ const UpdateProfile = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUpdating(true);
-
+const token = localStorage.getItem('token');
     try {
       const response = await fetch(`http://localhost:5000/api/auth/update/${user.id || user._id}`, {
         method: 'PUT',

@@ -11,7 +11,7 @@ router.post("/signup", signupController);
 // Login Route
 router.post("/login", loginController);
 
-router.put('/update/:userId', updateUser); 
+router.put('/update/:userId',verifyToken, updateUser); 
 router.get("/", getAllUsers);
 router.post('/forgot-password', forgotPassword);
 // Inside authRoutes.js or similar

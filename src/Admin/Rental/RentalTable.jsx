@@ -46,14 +46,17 @@ const RentalTable = () => {
       { duration: Infinity }
     );
   };
-
+const token = localStorage.getItem('token');
   const deleteRental = async (rentalId) => {
     const toastId = toast.loading('Deleting rental...');
 
     try {
       const res = await fetch(`${apiUrl}/api/manga/rental/${rentalId}`, {
-        method: 'DELETE',
-      });
+  method: 'DELETE',
+  headers: {
+    Authorization: `Bearer ${token}`, // 🔐 Include token for auth check
+  },
+})
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || 'Delete failed');

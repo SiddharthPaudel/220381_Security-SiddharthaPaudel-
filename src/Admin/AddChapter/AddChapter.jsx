@@ -44,12 +44,16 @@ const AddChapter = () => {
     const formData = new FormData();
     formData.append("title", chapterTitle);
     formData.append("zipFile", zipFile);
-
+const token = localStorage.getItem('token');
     try {
       const res = await fetch(`${apiUrl}/api/manga/${selectedManga}/chapters`, {
-        method: "POST",
-        body: formData,
-      });
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}` // 🔐 Required to pass auth
+    // ❗ DO NOT manually set 'Content-Type' when using FormData
+  },
+  body: formData,
+});
 
       if (!res.ok) {
         const errData = await res.json();

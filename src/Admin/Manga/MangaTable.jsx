@@ -61,7 +61,7 @@ const MangaTable = () => {
       }));
     }
   };
-
+const token = localStorage.getItem('token');
   const submitUpdate = async () => {
     if (!formData.title || !formData.author || !formData.genre) {
       toast.error("Title, Author & Genre are required");
@@ -84,14 +84,17 @@ const MangaTable = () => {
         : null,
     };
     try {
-      const res = await fetch(
-        `${apiUrl}/api/manga/update/${selected._id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+     const res = await fetch(
+  `${apiUrl}/api/manga/update/${selected._id}`,
+  {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`, // ✅ Add this line
+    },
+    body: JSON.stringify(payload),
+  }
+);
       if (!res.ok) throw new Error((await res.json()).message);
       toast.success("Updated!");
       refreshMangas();
@@ -105,8 +108,11 @@ const MangaTable = () => {
     if (!window.confirm("Delete this manga?")) return;
     try {
       const res = await fetch(`${apiUrl}/api/manga/delete/${id}`, {
-        method: "DELETE",
-      });
+  method: "DELETE",
+  headers: {
+    Authorization: `Bearer ${token}` // ✅ Add the auth header
+  }
+});
       if (!res.ok) throw new Error((await res.json()).message);
       toast.success("Deleted");
       refreshMangas();

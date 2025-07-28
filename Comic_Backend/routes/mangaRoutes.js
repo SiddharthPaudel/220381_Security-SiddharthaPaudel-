@@ -13,18 +13,19 @@ const uploadCover = multer({ storage: coverStorage });
 const uploadZip = multer({ storage: chapterZipStorage });
 
 router.post('/', verifyToken, verifyAdmin, uploadCover.single('coverImage'), addManga);
-router.post('/:mangaId/chapters', uploadZip.single('zipFile'), addChapter);
-router.get('/', getAllManga);
-router.put('/update/:mangaId', updateManga);
-router.delete('/delete/:mangaId', deleteManga);
+router.post('/:mangaId/chapters', verifyToken, verifyAdmin, uploadZip.single('zipFile'), addChapter);
+router.put('/update/:mangaId', verifyToken, verifyAdmin, updateManga);
+router.delete('/rental/:rentalId', verifyToken, verifyAdmin, deleteRental);
+router.delete('/delete/:mangaId', verifyToken, verifyAdmin, deleteManga);
 // Put all specific GET routes before param routes:
+router.get('/', getAllManga);
 router.get("/summary", getDashboardSummary);
 router.get('/rentals', getAllRentals);      // <-- moved here
 router.get('/bookmarks/:userId', getBookmarksByUser);
 router.get('/user/:userId', getUserRentals);
 router.get('/top-rated', getTopRatedMangas);
 router.get('/:mangaId', getMangaById);      // <-- param last
-router.delete('/rental/:rentalId', deleteRental);
+
 
 
 router.post('/:mangaId/rent', rentManga);
