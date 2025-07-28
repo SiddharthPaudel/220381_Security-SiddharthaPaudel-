@@ -42,7 +42,7 @@ const { token } = useAuth();
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <div className="bg-[#1a1a1a] p-4 rounded-lg shadow-sm">
-          <p className="text-sm text-gray-400">Total Manga</p>
+          <p className="text-sm text-gray-400">Total Comic</p>
           <p className="text-xl font-semibold text-yellow-400">{summary.totalManga}</p>
         </div>
         <div className="bg-[#1a1a1a] p-4 rounded-lg shadow-sm">

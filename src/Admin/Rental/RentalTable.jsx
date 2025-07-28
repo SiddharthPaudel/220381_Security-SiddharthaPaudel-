@@ -68,7 +68,7 @@ const RentalTable = () => {
   return (
     <div className="min-h-screen bg-[#121212] text-white p-8 font-[Montserrat]">
       <div className="bg-[#1e1e1e] p-6 rounded-2xl shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">Manga Rentals</h2>
+        <h2 className="text-2xl font-bold mb-6">Comic Rentals</h2>
 
         <div className="overflow-x-auto rounded-xl border border-gray-700">
           <table className="min-w-full text-sm text-left text-gray-300">

@@ -1,19 +1,18 @@
+// middleware/verifyToken.js
 import jwt from 'jsonwebtoken';
 
-const SECRET_KEY = "8261ba19898d0dcdfe6c0c411df74b587b2e54538f5f451633b71e39f957cf01";
-
 export const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  const token = req.headers.authorization?.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ msg: 'No token provided' });
+    return res.status(401).json({ message: 'No token provided' });
   }
 
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded;  // Store the user data in the request
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // decoded must contain .role
     next();
   } catch (err) {
-    res.status(401).json({ msg: 'Invalid or expired token' });
+    return res.status(401).json({ message: 'Invalid token' });
   }
 };

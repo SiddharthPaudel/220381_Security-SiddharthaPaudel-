@@ -143,10 +143,15 @@ const AddManga = () => {
       
       // Make API call to your backend
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${apiUrl}/api/manga`, {
-        method: 'POST',
-        body: submitData
-      });
+const token = localStorage.getItem('token'); // or use context/auth state
+
+const response = await fetch(`${apiUrl}/api/manga`, {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${token}` // 🔐 Pass token
+  },
+  body: submitData // this must be FormData (for file uploads)
+});
       
       if (response.ok) {
         const result = await response.json();

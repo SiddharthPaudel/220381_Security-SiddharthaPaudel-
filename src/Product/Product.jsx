@@ -68,7 +68,7 @@ const Product = () => {
               </button>
               <input
                 type="text"
-                placeholder="Search manga..."
+                placeholder="Search comic..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="flex-1 bg-transparent text-gray-900 text-sm focus:outline-none placeholder-gray-500"
