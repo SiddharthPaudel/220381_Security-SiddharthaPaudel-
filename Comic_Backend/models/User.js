@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema({
     default: [],
   },
   passwordChangedAt: Date,
+  isVerified: {
+  type: Boolean,
+  default: false,
+}
+
 });
 
 // Pre-save hook to hash password if modified and prevent reuse

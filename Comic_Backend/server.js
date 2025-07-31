@@ -15,6 +15,7 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import connectDB from "./config/db.js";
 import { globalApiLimiter } from './middleware/rateLimiter.js';
 import mongoSanitize from 'express-mongo-sanitize';
+import cookieParser from 'cookie-parser';
 // Load environment variables
 dotenv.config();
 
@@ -24,7 +25,7 @@ const app = express();
 app.use(globalApiLimiter);
 app.use(cors());
 app.use(express.json());
-
+app.use(cookieParser());
 // 🔒 Helmet with custom configuration
 app.use(
   helmet({
@@ -56,11 +57,14 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ API Routes
 app.use("/api/auth", mongoSanitize(), authRoutes);
-app.use("/api/manga", mangaRoutes);
 app.use("/api/payment",mongoSanitize(), paymentRoutes);
+app.use("/api/manga", mangaRoutes);
+
+
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
   console.log(`🚀 Server running on http://localhost:${PORT}`)
 );
+

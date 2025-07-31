@@ -11,6 +11,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 const SECRET_KEY = process.env.JWT_SECRET;
 const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
+import logger from '../utils/logger.js';
+
 // Signup Controller
 // export const signupController = async (req, res) => {
 //   const { name, email, password } = req.body;
@@ -27,26 +29,45 @@ const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 //     res.status(500).json({ error: 'Signup failed' });
 //   }
 // };
+export const verifyEmailController = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    const decoded = jwt.verify(token, process.env.EMAIL_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(400).json({ msg: 'Invalid verification link.' });
+    }
+
+    if (user.isVerified) {
+      return res.status(200).json({ msg: 'Email already verified.' });
+    }
+
+    user.isVerified = true;
+    await user.save();
+
+    res.status(200).json({ msg: 'Email verified successfully. You can now log in.' });
+  } catch (err) {
+    res.status(400).json({ msg: 'Verification link expired or invalid.' });
+  }
+};
 
 export const signupController = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    // Check existing user
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      logger.info(`Signup attempt failed - user already exists: ${email}`);
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    // ✅ Email format validation (very basic regex)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        msg: 'Please provide a valid email address.',
-      });
+      return res.status(400).json({ msg: 'Please provide a valid email address.' });
     }
 
-    // ✅ Password strength validation
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&_])[A-Za-z\d@$!%*?#&_]{8,}$/;
     if (!passwordRegex.test(password)) {
@@ -55,16 +76,33 @@ export const signupController = async (req, res) => {
       });
     }
 
-    // ✅ Create user (assuming password hashing in your model's pre-save hook)
     const newUser = await User.create({
       name,
       email,
       password,
+      isVerified: false,
     });
 
-    res.status(201).json({ msg: 'User registered successfully' });
+    const token = jwt.sign({ userId: newUser._id }, process.env.EMAIL_SECRET, {
+      expiresIn: '1h',
+    });
+
+    const verificationLink = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+    const emailContent = `
+      <h3>Hello ${name},</h3>
+      <p>Thanks for signing up. Please verify your email by clicking below:</p>
+      <a href="${verificationLink}" target="_blank">Verify Email</a>
+      <p>This link expires in 1 hour.</p>
+    `;
+
+    await sendEmail(email, 'Verify Your Email - Comic Ninja', emailContent);
+    logger.info(`Verification email sent to ${email}`);
+
+    res.status(201).json({
+      msg: 'User registered successfully. Please check your email to verify your account.',
+    });
   } catch (err) {
-    console.error(err);
+    logger.error(`Signup failed for ${email}: ${err.message}`);
     res.status(500).json({ error: 'Signup failed' });
   }
 };
@@ -81,10 +119,12 @@ export const loginController = async (req, res) => {
 
   // ✅ Basic Input Checks
   if (!email || !password) {
+    logger.warn('Login attempt with missing email or password');
     return res.status(400).json({ msg: "Email and password required" });
   }
 
   if (!otp && !captchaToken) {
+    logger.warn(`Login attempt without captcha or otp: ${email}`);
     return res.status(400).json({ msg: "Captcha token is required" });
   }
 
@@ -109,6 +149,7 @@ export const loginController = async (req, res) => {
       console.log("Google reCAPTCHA response:", response.data);
 
       if (!response.data.success) {
+          logger.warn(`Captcha verification failed for login: ${email}`);
         return res.status(400).json({
           msg: "Captcha verification failed",
           errors: response.data["error-codes"],
@@ -136,6 +177,7 @@ export const loginController = async (req, res) => {
 
     // ✅ Check if account is locked
     if (user.lockUntil && user.lockUntil > Date.now()) {
+         logger.warn(`Login attempt on locked account: ${email}`);
       return res.status(403).json({
         msg: `Account locked. Try again after ${new Date(
           user.lockUntil
@@ -150,9 +192,11 @@ export const loginController = async (req, res) => {
 
       if (user.failedLoginAttempts >= MAX_LOGIN_ATTEMPTS) {
         user.lockUntil = Date.now() + LOCK_TIME;
+        logger.warn(`Account locked due to too many failed attempts: ${email}`);
       }
 
       await user.save();
+       logger.warn(`Login failed - invalid password: ${email}`);
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
@@ -168,6 +212,7 @@ export const loginController = async (req, res) => {
       await user.save();
 
       await sendEmail(user.email, "Your Login OTP", `Your OTP is: ${generatedOtp}`);
+            logger.info(`OTP sent for login: ${email}`);
 
       return res.status(200).json({
         msg: "OTP sent to your email. Please verify to complete login.",
@@ -177,21 +222,28 @@ export const loginController = async (req, res) => {
 
     // ✅ Validate OTP
     if (otp !== user.otpCode || Date.now() > user.otpExpires) {
+         logger.warn(`Invalid or expired OTP attempt: ${email}`);
       return res.status(400).json({ msg: "Invalid or expired OTP" });
     }
 
-    // ✅ Clear OTP fields
+    // 
     user.otpCode = null;
     user.otpExpires = null;
     await user.save();
 
-    // ✅ Generate JWT
+    //
     const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      SECRET_KEY,
-      { expiresIn: "2h" }
-    );
-
+  { userId: user._id, role: user.role },
+  SECRET_KEY,
+  { expiresIn: "7d" }  // Token will now expire in 7 days
+);
+// res.cookie('token', token, {
+//   httpOnly: true,
+//   secure: process.env.NODE_ENV === 'production',
+//   sameSite: 'Strict',
+//   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+// });
+    logger.info(`User logged in successfully: ${email}`);
     return res.json({
       token,
       user: {
@@ -202,8 +254,18 @@ export const loginController = async (req, res) => {
         avatar: user.avatar,
       },
     });
+//     res.status(200).json({
+//   message: "Login successful",
+//   user: {
+//     id: user._id,
+//     name: user.name,
+//     email: user.email,
+//     role: user.role,
+//     avatar: user.avatar,
+//   },
+// });
   } catch (err) {
-    console.error("❌ Login error:", err);
+    logger.error(`Login error for ${email}: ${err.message}`);
     return res.status(500).json({ error: "Login failed" });
   }
 };
@@ -224,11 +286,13 @@ export const updateUser = async (req, res) => {
       if (avatar >= 1 && avatar <= 6) {
         updateData.avatar = avatar;
       } else {
+         logger.warn(`Invalid avatar update attempt by user ${userId}`);
         return res.status(400).json({ message: 'Invalid avatar selection' });
       }
     }
 
     if (Object.keys(updateData).length === 0) {
+         logger.warn(`Empty update request by user ${userId}`);
       return res.status(400).json({ message: 'No valid fields to update' });
     }
 
@@ -237,9 +301,10 @@ export const updateUser = async (req, res) => {
     });
 
     if (!updatedUser) {
+      logger.warn(`Update failed - user not found: ${userId}`);
       return res.status(404).json({ message: 'User not found' });
     }
-
+  logger.info(`User updated successfully: ${userId}`);
     res.status(200).json({
       message: 'User updated successfully',
       user: {
@@ -250,7 +315,7 @@ export const updateUser = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
+        logger.error(`Failed to update user ${req.params.userId}: ${err.message}`);
     res.status(500).json({ error: 'Failed to update user' });
   }
 };
@@ -299,7 +364,10 @@ export const forgotPassword = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      logger.warn(`Forgot password requested for non-existent user: ${email}`);
+      return res.status(404).json({ message: "User not found" });
+    }
 
     // Generate reset token (random string)
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -336,7 +404,7 @@ export const forgotPassword = async (req, res) => {
 
     res.json({ message: "Password reset link sent to your email" });
   } catch (err) {
-    console.error(err);
+      logger.error(`Password reset request failed for ${email}: ${err.message}`);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -347,6 +415,7 @@ export const resetPassword = async (req, res) => {
   const { newPassword } = req.body;
 
   if (!token || !newPassword) {
+   
     return res.status(400).json({ message: "Token and new password are required" });
   }
 
@@ -372,7 +441,7 @@ export const resetPassword = async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
-
+ logger.info(`Password reset successful for user ${user.email}`);
     res.json({ message: "Password has been reset successfully" });
   } catch (err) {
     // Check if error is password reuse error from pre-save hook
@@ -381,6 +450,7 @@ export const resetPassword = async (req, res) => {
     }
 
     console.error(err);
+    logger.error(`Password reset failed: ${err.message}`);
     res.status(500).json({ message: "Server error" });
   }
 };

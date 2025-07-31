@@ -26,6 +26,7 @@ import ResetPassword from "./ResetPassword/ResetPassword";
 import { Toaster } from 'react-hot-toast';
 import PaymentSuccess from "./Payment/PaymentSucess";
 import SupportPage from "./components/SupportPage";
+import VerifyEmail from "./VerifyEmail/VerifyEmail";
 
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/payment-success" element={<PaymentSuccess/>} />
           <Route path="/support" element={<SupportPage/>} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
         </Route>
 
         <Route path="/admin" element={
