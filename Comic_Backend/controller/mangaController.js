@@ -215,18 +215,33 @@ export const updateManga = async (req, res) => {
   }
 };
 
-
-
+function cleanQuery(query) {
+  const clean = {};
+  for (const key in query) {
+    if (typeof query[key] === 'object' && Object.keys(query[key]).length === 0) {
+      // skip keys with empty objects
+      continue;
+    }
+    clean[key] = query[key];
+  }
+  return clean;
+}
 
 export const getAllManga = async (req, res) => {
-    try {
-      const mangaList = await Manga.find();  // Fetch all manga from the database
-      res.status(200).json(mangaList); // Send the list of manga as a response
-    } catch (err) {
-      console.error(err); // Log any errors
-      res.status(500).json({ error: 'Failed to fetch manga' }); // Respond with an error message
-    }
-  };
+  console.log('Sanitized req.query:', req.query);
+
+  const filter = cleanQuery(req.query);
+  console.log('Cleaned query:', filter);
+
+  try {
+    const mangaList = await Manga.find(filter);
+    res.status(200).json(mangaList);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch manga' });
+  }
+};
+
   
   // Get a single manga by its ID, including its chapters
 export const getMangaById = async (req, res) => {
@@ -798,11 +813,13 @@ export const deleteCommentFromOverall = async (req, res) => {
 // };
 
 
-import sanitize from "mongo-sanitize"; // Ensure you install: npm install mongo-sanitize
+
+
+
 
 export const addRating = async (req, res) => {
   try {
-    const mangaId = sanitize(req.params.mangaId);
+    const mangaId = req.params.mangaId;
     const { userId, rating, review, avatar } = req.body;
 
     // Input validations
@@ -818,8 +835,11 @@ export const addRating = async (req, res) => {
       return res.status(400).json({ message: "Review must be a string" });
     }
 
-    // Sanitize review text to prevent injection
-    const cleanReview = sanitize(review);
+    // Sanitize review text to prevent XSS
+    const cleanReview = sanitizeHtml(review || "", {
+      allowedTags: [],       // no HTML tags allowed, plain text only
+      allowedAttributes: {}, // no attributes allowed
+    });
 
     const manga = await Manga.findById(mangaId);
     if (!manga) return res.status(404).json({ message: "Manga not found" });
@@ -863,6 +883,7 @@ export const addRating = async (req, res) => {
     return res.status(500).json({ message: "Server error while saving rating and review" });
   }
 };
+
 
 export const removeRating = async (req, res) => {
   try {

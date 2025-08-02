@@ -20,12 +20,15 @@ import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 
 // ✅ Security Middlewares
-app.use(globalApiLimiter);
-app.use(cors());
 app.use(express.json());
-app.use(cookieParser());
+
+// app.use(cookieParser());
 // 🔒 Helmet with custom configuration
 app.use(
   helmet({
@@ -56,9 +59,9 @@ connectDB();
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ API Routes
-app.use("/api/auth", mongoSanitize(), authRoutes);
-app.use("/api/payment",mongoSanitize(), paymentRoutes);
-app.use("/api/manga", mangaRoutes);
+app.use("/api/auth", mongoSanitize(),globalApiLimiter, authRoutes);
+app.use("/api/payment",mongoSanitize(),globalApiLimiter, paymentRoutes);
+app.use("/api/manga",mongoSanitize(),globalApiLimiter, mangaRoutes);
 
 
 

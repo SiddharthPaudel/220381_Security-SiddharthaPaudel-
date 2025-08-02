@@ -58,3 +58,44 @@
 {"level":"info","message":"OTP sent for login: paudelalex42@gmail.com","timestamp":"2025-07-31 13:09:44"}
 {"level":"info","message":"User logged in successfully: paudelalex42@gmail.com","timestamp":"2025-07-31 13:09:59"}
 {"level":"info","message":"User updated successfully: 687caa9ea6cff4c109723bca","timestamp":"2025-07-31 13:12:06"}
+{"level":"info","message":"User updated successfully: 687caa9ea6cff4c109723bca","timestamp":"2025-07-31 13:21:57"}
+{"level":"info","message":"User updated successfully: 687caa9ea6cff4c109723bca","timestamp":"2025-07-31 13:32:48"}
+{"level":"info","message":"User updated successfully: 687caa9ea6cff4c109723bca","timestamp":"2025-07-31 13:33:23"}
+{"level":"info","message":"OTP sent for login: paudelalex42@gmail.com","timestamp":"2025-07-31 13:34:42"}
+{"level":"info","message":"User logged in successfully: paudelalex42@gmail.com","timestamp":"2025-07-31 13:34:52"}
+{"level":"info","message":"OTP sent for login: Comic@gmail.com","timestamp":"2025-07-31 16:35:55"}
+{"level":"info","message":"User logged in successfully: Comic@gmail.com","timestamp":"2025-07-31 16:36:33"}
+{"level":"info","message":"User updated successfully: 687bb9ccbdb00a5cf7277933","timestamp":"2025-07-31 16:54:53"}
+{"level":"warn","message":"Login attempt without captcha or otp: hack@example.com","timestamp":"2025-07-31 16:57:29"}
+{"level":"info","message":"OTP sent for login: paudelalex42@gmail.com","timestamp":"2025-07-31 17:49:01"}
+{"level":"info","message":"User logged in successfully: paudelalex42@gmail.com","timestamp":"2025-07-31 17:49:24"}
+{"level":"info","message":"OTP sent for login: paudelalex42@gmail.com","timestamp":"2025-07-31 17:56:27"}
+{"level":"info","message":"User logged in successfully: paudelalex42@gmail.com","timestamp":"2025-07-31 17:56:37"}
+{"level":"info","message":"OTP sent for login: paudelalex42@gmail.com","timestamp":"2025-07-31 17:58:20"}
+{"level":"info","message":"User logged in successfully: paudelalex42@gmail.com","timestamp":"2025-07-31 17:58:43"}
+{"level":"info","message":"Verification email sent to sidpaudel47@gmail.com","timestamp":"2025-07-31 18:55:20"}
+{"level":"info","message":"OTP sent for login: sidpaudel47@gmail.com","timestamp":"2025-07-31 18:56:22"}
+{"level":"info","message":"User logged in successfully: sidpaudel47@gmail.com","timestamp":"2025-07-31 18:56:42"}
+{"level":"info","message":"User updated successfully: 688b6b391801f4c8e61f52d3","timestamp":"2025-07-31 18:57:14"}
+{"level":"info","message":"OTP sent for login: paudelalex42@gmail.com","timestamp":"2025-07-31 19:04:42"}
+{"level":"info","message":"User logged in successfully: paudelalex42@gmail.com","timestamp":"2025-07-31 19:04:54"}
+{"level":"info","message":"Verification email sent to sidpaudel47@gmail.com","timestamp":"2025-07-31 19:30:54"}
+{"level":"warn","message":"Login failed - invalid password: sidpaudel47@gmail.com","timestamp":"2025-07-31 19:32:20"}
+{"level":"info","message":"Password reset successful for user sidpaudel47@gmail.com","timestamp":"2025-07-31 19:33:10"}
+{"level":"error","message":"Signup failed for sidpaudel47@gmail.com: Invalid login: 454-4.7.0 Cannot authenticate due to temporary system problem. Try again later.\n454-4.7.0 For more information, go to\n454 4.7.0  https://support.google.com/a/answer/3221692 d2e1a72fcca58-76bcce8a838sm1746465b3a.32 - gsmtp","timestamp":"2025-07-31 19:38:39"}
+{"level":"info","message":"Verification email sent to paudelsiddhartha7@gmail.com","timestamp":"2025-07-31 19:47:10"}
+{"level":"info","message":"OTP sent for login: paudelsiddhartha7@gmail.com","timestamp":"2025-07-31 19:48:23"}
+{"level":"info","message":"User logged in successfully: paudelsiddhartha7@gmail.com","timestamp":"2025-07-31 19:48:39"}
+{"level":"info","message":"User updated successfully: 688b775f3de25450e4d4427a","timestamp":"2025-07-31 19:51:59"}
+{"level":"info","message":"Password reset successful for user paudelsiddhartha7@gmail.com","timestamp":"2025-07-31 19:53:27"}
+{"level":"info","message":"OTP sent for login: paudelsiddhartha7@gmail.com","timestamp":"2025-07-31 19:53:47"}
+{"level":"info","message":"User logged in successfully: paudelsiddhartha7@gmail.com","timestamp":"2025-07-31 19:53:58"}
+{"level":"warn","message":"Login failed - invalid password: goatram987@gmail.com","timestamp":"2025-07-31 19:54:56"}
+{"level":"warn","message":"Login failed - invalid password: goatram987@gmail.com","timestamp":"2025-07-31 19:55:03"}
+{"level":"warn","message":"Login failed - invalid password: goatram987@gmail.com","timestamp":"2025-07-31 19:55:09"}
+{"level":"warn","message":"Login failed - invalid password: goatram987@gmail.com","timestamp":"2025-07-31 19:55:15"}
+{"level":"warn","message":"Account locked due to too many failed attempts: goatram987@gmail.com","timestamp":"2025-07-31 19:55:33"}
+{"level":"warn","message":"Login failed - invalid password: goatram987@gmail.com","timestamp":"2025-07-31 19:55:33"}
+{"level":"warn","message":"Login attempt on locked account: goatram987@gmail.com","timestamp":"2025-07-31 19:55:36"}
+{"level":"info","message":"OTP sent for login: paudelalex42@gmail.com","timestamp":"2025-07-31 19:57:02"}
+{"level":"info","message":"User logged in successfully: paudelalex42@gmail.com","timestamp":"2025-07-31 19:57:15"}
